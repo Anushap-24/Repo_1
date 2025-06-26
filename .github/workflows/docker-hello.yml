@@ -1,0 +1,32 @@
+name: Deploy Docker Hello World to VM
+
+on:
+  push:
+    branches: [ main ]  # Trigger when you push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH Agent
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copy Files to VM
+        run: |
+          scp -o StrictHostKeyChecking=no -r . ubuntu@<VM_IP>:/home/ubuntu/hello-docker
+
+      - name: Build and Run Docker on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@<VM_IP> << 'EOF'
+            cd hello-docker
+            docker build -t hello-world .
+            docker stop hello || true
+            docker rm hello || true
+            docker run -d --name hello -p 80:80 hello-world
+          EOF
