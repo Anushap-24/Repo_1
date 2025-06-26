@@ -19,11 +19,11 @@ jobs:
 
       - name: Copy Files to VM
         run: |
-          scp -o StrictHostKeyChecking=no -r . ubuntu@<VM_IP>:/home/ubuntu/hello-docker
+          scp -o StrictHostKeyChecking=no -r . ubuntu@20.151.57.64:/home/ubuntu/hello-docker
 
       - name: Build and Run Docker on VM
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@<VM_IP> << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@20.151.57.64 << 'EOF'
             cd hello-docker
             docker build -t hello-world .
             docker stop hello || true
